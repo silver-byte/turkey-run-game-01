@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#351f29">
+  <title>Gobble Run 3D — The Great Thanksgiving Escape</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main id="cabinet" data-mode="title">
+    <canvas id="farm" aria-label="3D view of the autumn farm lane"></canvas>
+    <div class="lens" aria-hidden="true"></div>
+    <header id="dashboard">
+      <div class="badge"><span class="stamp">GR<span>3D</span></span><span class="location"><i id="sector-number">01</i><b id="sector-name">THE BARNYARD</b></span></div>
+      <div class="metrics">
+        <div class="metric"><span>SCORE</span><strong id="score">00000</strong></div>
+        <div class="metric"><span>DISTANCE</span><strong id="distance">000 <small>M</small></strong></div>
+        <div class="metric"><span>LIVES</span><strong id="lives" aria-label="3 lives">♥♥♥</strong></div>
+      </div>
+      <button id="sound" data-action="mute" title="Toggle sound (M)"><span class="speaker" aria-hidden="true">♫</span><span id="sound-label">SOUND ON</span><kbd>M</kbd></button>
+    </header>
+    <div id="heat" aria-label="Farmer distance"><span class="signal" aria-hidden="true">!</span><span><b id="heat-label">FARMER BEHIND</b><small id="heat-detail">8.8 M BACK</small></span></div>
+    <div id="notice" hidden></div>
+    <section id="banner" aria-label="Game menu">
+      <div class="eyebrow"><span id="banner-index">01</span><span id="banner-kicker">THE GREAT THANKSGIVING ESCAPE</span></div>
+      <h1 id="headline"><span>GOBBLE</span><span>RUN <i>3D</i></span></h1>
+      <p id="subtitle">Dinner is <em>making a run for it.</em></p>
+      <p id="story">A hungry farmer. A very determined turkey.<br>Five hundred metres to the wild.</p>
+      <div id="result" class="statgrid" hidden></div>
+      <button id="play" data-action="start"><span id="cta">CLICK OR PRESS ENTER TO RUN</span><span aria-hidden="true">→</span></button>
+    </section>
+    <footer id="route">
+      <div class="roadmap">
+        <span class="road-label">THE GETAWAY</span>
+        <div id="track" role="progressbar" aria-label="Distance to the wild gate" aria-valuemin="0" aria-valuemax="500" aria-valuenow="0"><span id="fill"></span><i></i><i></i><i></i></div>
+        <span class="gate-label">500 M <b>WILD GATE</b></span>
+      </div>
+      <div class="controls"><span><kbd>←</kbd><kbd>→</kbd> STEER</span><span><kbd>↑</kbd> JUMP</span><span><kbd>↓</kbd> DUCK</span></div>
+    </footer>
+    <aside id="file-access" hidden><p>Choose the <b>game</b> folder to allow Chrome to read its local modules. Nothing is uploaded.</p><label>SELECT GAME FOLDER<input id="folder" type="file" webkitdirectory></label></aside>
+    <p id="problem" role="alert" hidden></p>
+  </main>
+  <script type="module">
+    function report(error) {
+      const panel = document.querySelector('#problem');
+      panel.textContent = `Gobble Run 3D could not start: ${error.message}.`;
+      panel.hidden = false;
+      console.error(error);
+    }
+    if (location.protocol === 'file:') {
+      import('./src/main.js').catch(() => {
+        const loader = document.createElement('script');
+        loader.src = './src/local.js';
+        loader.addEventListener('error', () => report(new Error('local folder loader unavailable')));
+        document.head.append(loader);
+      });
+    } else {
+      import('./src/main.js').catch(report);
+    }
+  </script>
+</body>
+</html>
