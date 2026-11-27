@@ -2,7 +2,8 @@ import * as T from '../vendor/three.module.min.js';
 import { ball, beam, box, group, paint, piece } from './mesh.js';
 
 function plumage(parent, i, angle) {
-  const colors = ['#902f49', '#c64641', '#e36b43', '#d99547', '#eac279', '#f6ddaa'];
+  const colors = ['#933360', '#b83351', '#e34f46', '#e07a46', '#d2a157', '#f8dda5'];
+  const crest = ['#ffc56b', '#f8a75c', '#ffba64', '#ffd583', '#ffe3a2'][Math.abs(i - 5) % 5];
   const feather = group(parent, 0, 0, .12 + Math.cos(angle) * .12);
   feather.rotation.z = -angle;
   feather.rotation.x = -.13 - Math.abs(angle) * .06;
@@ -10,12 +11,23 @@ function plumage(parent, i, angle) {
   feather.scale.setScalar(size);
   ball(feather, '#4e2635', 0, 1.06, 0, .285, 1.18, .125);
   ball(feather, colors[(i + 2) % 5], 0, 1.12, .064, .255, 1.102, .095);
-  ball(feather, '#f3ac5c', 0, 1.63, .12, .237, .53, .058);
-  ball(feather, '#622b40', 0, 1.69, .151, .226, .163, .052);
-  ball(feather, colors[5], 0, 1.93, .149, .162, .135, .043);
-  ball(feather, '#f7cc83', 0, 1.09, .165, .018, .79, .019);
+  ball(feather, crest, 0, 1.63, .12, .237, .53, .058);
+  ball(feather, '#652948', 0, 1.69, .151, .226, .163, .052);
   ball(feather, colors[(i + 2) % 5], 0, 1.18, -.081, .235, 1.014, .060);
-  ball(feather, '#f4c277', 0, 1.82, -.099, .199, .265, .048);
+  ball(feather, crest, 0, 1.79, -.117, .218, .335, .060);
+  ball(feather, '#733452', 0, 1.65, -.155, .218, .106, .039);
+  for (const face of [-1, 1]) {
+    const z = face * .175;
+    ball(feather, colors[5], 0, 1.95, z, .151, .119, .044);
+    ball(feather, '#ffd48b', 0, 1.04, z, .021, .654, .019);
+    for (const side of [-1, 1]) {
+      for (let notch = 0; notch < 3; notch++) {
+        const barb = ball(feather, '#e5a063', side * .086, 1.12 + notch * .147,
+          z - face * .014, .109, .013, .015);
+        barb.rotation.z = side * .50;
+      }
+    }
+  }
 }
 
 export function makeTurkey(parent) {

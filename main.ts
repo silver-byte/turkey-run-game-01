@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
@@ -18,7 +18,15 @@ function prepareReview(destination: string) {
     cpSync(source, join(destination, folder), { recursive: true });
   }
   const dossier = buildDossier(destination, submissionLimits);
-  writeFileSync(join(destination, 'dossier.json'), dossier);
+  // Keep a previously built dossier intact if a write is interrupted.
+  const staging = mkdtempSync(join(destination, '.dossier-'));
+  try {
+    const pending = join(staging, 'dossier.json');
+    writeFileSync(pending, dossier);
+    renameSync(pending, join(destination, 'dossier.json'));
+  } finally {
+    rmSync(staging, { recursive: true, force: true });
+  }
 }
 
 prepareReview(resolve(process.env.MAKEFUN_OUTPUT_DIR ?? '/output'));
